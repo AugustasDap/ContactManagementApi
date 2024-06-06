@@ -1,5 +1,4 @@
 ﻿using ContactManagementApi.BusinessLogic.Attributes;
-using ContactManagementApi.Database.Models;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -10,22 +9,20 @@ using System.Threading.Tasks;
 
 namespace ContactManagementApi.BusinessLogic.DTOs
 {
-    public class PersonDto
+    public class PersonUpdateDto
     {
-        public Guid Id { get; set; }
-        
         [Required]
         [CustomPersonNameValidation]
         public string Name { get; set; }
-        
+
         [Required]
         [CustomPersonNameValidation]
         public string LastName { get; set; }
-        
+
         [Required]
         [CustomPersonGenderValidation]
         public string Gender { get; set; }
-        
+
         [Required]
         [CustomPersonBirthdayValidation]
         public DateTime Birthday { get; set; }
@@ -37,7 +34,7 @@ namespace ContactManagementApi.BusinessLogic.DTOs
         [Required]
         [CustomPersonPhoneValidation]
         public string PhoneNumber { get; set; }
-        
+
         [Required]
         [CustomPersonEmailValidation]
         public string Email { get; set; }

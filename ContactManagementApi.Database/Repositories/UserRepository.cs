@@ -13,6 +13,17 @@ namespace ContactManagementApi.Database.Repositories
             _context = context;
         }
 
+        public async Task<User> GetUserByIdAsync(Guid id)
+        {
+            return await _context.Users.FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task DeleteUserAsync(User user)
+        {
+            _context.Users.Remove(user);            
+            await _context.SaveChangesAsync();
+        }
+
         
     }
 }

@@ -18,14 +18,35 @@ namespace ContactManagementApi.Database.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
             modelBuilder.Entity<User>()
+                .HasMany(u => u.People)
+                .WithOne(p => p.User)
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()                
                 .Property(u => u.Role)
                 .HasConversion<int>();
+
             modelBuilder.Entity<Person>()
                 .HasOne(x => x.PlaceOfResidence)
                 .WithOne(x => x.Person)
-                .HasForeignKey<Person>(u => u.PlaceOfResidenceId);
+                .HasForeignKey<PlaceOfResidence>(pr => pr.PersonId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
+
+
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    base.OnModelCreating(modelBuilder);
+
+        //    modelBuilder.Entity<User>()
+        //        .HasMany(u => u.People)
+        //        .WithOne(p => p.User)
+        //        .HasForeignKey(p => p.UserId)
+        //        .OnDelete(DeleteBehavior.Cascade);
+
+
+        //}
     }
 }

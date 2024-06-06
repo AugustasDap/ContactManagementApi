@@ -32,8 +32,9 @@ namespace ContactManagementApi.BusinessLogic.Services
                 Subject = new ClaimsIdentity(new[]
                 {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username)
-            }),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
+                }),
                 Expires = DateTime.UtcNow.AddMinutes(5),
                 Issuer = _issuer,
                 Audience = _audience,

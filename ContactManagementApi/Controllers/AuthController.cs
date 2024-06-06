@@ -1,7 +1,9 @@
 ﻿using ContactManagementApi.BusinessLogic.DTOs;
+using ContactManagementApi.BusinessLogic.Interfaces;
 using ContactManagementApi.BusinessLogic.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ContactManagementApi.Controllers
 {
@@ -9,8 +11,8 @@ namespace ContactManagementApi.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly AuthService _authService;
-        public AuthController(AuthService authService)
+        private readonly IAuthService _authService;
+        public AuthController(IAuthService authService)
         {
             _authService = authService;
         }
@@ -41,7 +43,18 @@ namespace ContactManagementApi.Controllers
 
             return Ok(new { Token = token });
         }
-
+        [HttpDelete("DeleteUser")]
+        [Authorize(Roles = "Admin")] //<<roles!!
+        public async Task<IActionResult> DeleteUser(Guid id)
+        {
+            var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var isDeleted = await _authService.DeleteUserAsync(id);
+            if (!isDeleted)
+            {
+                return NotFound("User not found");
+            }
+            return Ok("User deleted");
+        }
 
     }
 }

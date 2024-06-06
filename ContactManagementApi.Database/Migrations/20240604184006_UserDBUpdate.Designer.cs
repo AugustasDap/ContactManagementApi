@@ -4,6 +4,7 @@ using ContactManagementApi.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ContactManagementApi.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240604184006_UserDBUpdate")]
+    partial class UserDBUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,7 +69,7 @@ namespace ContactManagementApi.Database.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("People", (string)null);
+                    b.ToTable("People");
                 });
 
             modelBuilder.Entity("ContactManagementApi.Database.Models.PlaceOfResidence", b =>
@@ -99,7 +102,7 @@ namespace ContactManagementApi.Database.Migrations
                     b.HasIndex("PersonId")
                         .IsUnique();
 
-                    b.ToTable("PlacesOfResidence", (string)null);
+                    b.ToTable("PlacesOfResidence");
                 });
 
             modelBuilder.Entity("ContactManagementApi.Database.Models.User", b =>
@@ -125,7 +128,7 @@ namespace ContactManagementApi.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ContactManagementApi.Database.Models.Person", b =>

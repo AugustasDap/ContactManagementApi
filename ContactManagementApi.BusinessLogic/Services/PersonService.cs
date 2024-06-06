@@ -3,47 +3,52 @@ using ContactManagementApi.BusinessLogic.Interfaces;
 using ContactManagementApi.Database.Context;
 using ContactManagementApi.Database.Models;
 using ContactManagementApi.Database.Repositories;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+
 
 namespace ContactManagementApi.BusinessLogic.Services
 {
     public class PersonService : IPersonService
     {
         private readonly IPersonRepository _personRepository;
-        private readonly ApplicationDbContext _context;
+        private readonly string _fileUploadPath = "C:\\Users\\Augustas\\source\\repos\\ContactManagementApi\\ContactManagementApi.Database\\Files\\";
 
-        public PersonService(IPersonRepository personRepository, ApplicationDbContext context)
+
+
+        public PersonService(IPersonRepository personRepository)
         {
             _personRepository = personRepository;
-            _context = context;
+            
+            
         }
 
-        public async Task<PersonDto> AddPersonAsync(PersonDto personDto, string userId)
+        public async Task<PersonDto> AddPersonAsync(PersonUpdateDto personUpdateDto, string userId) 
         {
-            //var existingPerson = _context.People
-            //     .FirstOrDefaultAsync(a => a.PersonIdentificationCode == personDto.PersonIdentificationCode);
 
-            //if (existingPerson != null)
-            //{
-            //    throw new Exception("Person with the given identification code already exists.");
-            //}
+            string filePath = null;
+            if (personUpdateDto.File != null && personUpdateDto.File.Length > 0)
+            {
+                filePath = Path.Combine(_fileUploadPath, Guid.NewGuid().ToString() + Path.GetExtension(personUpdateDto.File.FileName));
+                await FileImageSizeHelper.SaveImageAsync(filePath, personUpdateDto.File);
+            }
+
             var person = new Person
-                {
-                    Id = Guid.NewGuid(),
-                    Name = personDto.Name,
-                    LastName = personDto.LastName,
-                    Gender = personDto.Gender,
-                    Birthday = personDto.Birthday,
-                    PersonIdentificationCode = personDto.PersonIdentificationCode,
-                    PhoneNumber = personDto.PhoneNumber,
-                    Email = personDto.Email,
-                    FilePath = personDto.FilePath,
-                    PlaceOfResidence = new PlaceOfResidence
+            {
+                
+                Name = personUpdateDto.Name,
+                LastName = personUpdateDto.LastName,
+                Gender = personUpdateDto.Gender,
+                Birthday = personUpdateDto.Birthday,
+                PersonIdentificationCode = personUpdateDto.PersonIdentificationCode,
+                PhoneNumber = personUpdateDto.PhoneNumber,
+                Email = personUpdateDto.Email,
+                FilePath = filePath,                
+                PlaceOfResidence = new PlaceOfResidence
                     {
-                        City = personDto.PlaceOfResidence.City,
-                        Street = personDto.PlaceOfResidence.Street,
-                        HouseNumber = personDto.PlaceOfResidence.HouseNumber,
-                        ApartmentNumber = personDto.PlaceOfResidence.ApartmentNumber
+                        City = personUpdateDto.PlaceOfResidence.City,
+                        Street = personUpdateDto.PlaceOfResidence.Street,
+                        HouseNumber = personUpdateDto.PlaceOfResidence.HouseNumber,
+                        ApartmentNumber = personUpdateDto.PlaceOfResidence.ApartmentNumber
                     },
                     UserId = new Guid(userId),
                 };
@@ -58,7 +63,6 @@ namespace ContactManagementApi.BusinessLogic.Services
                 PersonIdentificationCode = createdPerson.PersonIdentificationCode,
                 PhoneNumber = createdPerson.PhoneNumber,
                 Email = createdPerson.Email,
-                FilePath = createdPerson.FilePath,
                 PlaceOfResidence = new PlaceOfResidenceDto
                 {
                     City = createdPerson.PlaceOfResidence.City,
@@ -71,15 +75,18 @@ namespace ContactManagementApi.BusinessLogic.Services
 
         }
 
-        public Task DeletePersonAsync(Guid id, string userId)
+        public async Task<bool> DeletePersonAsync(Guid id, string userId)
         {
-            throw new NotImplementedException();
+            var person = await _personRepository.GetPersonByIdAsync(id, userId);
+            if (person == null)
+            {
+                return false;
+            }
+            await _personRepository.DeletePersonAsync(person);
+            return true;
         }
 
-        public Task<IEnumerable<Person>> GetAllPersonsAsync(string userId)
-        {
-            throw new NotImplementedException();
-        }
+
 
         public async Task<PersonDto> GetPersonByIdAsync(Guid id, string userId)
         {
@@ -110,7 +117,7 @@ namespace ContactManagementApi.BusinessLogic.Services
                 PersonIdentificationCode = person.PersonIdentificationCode,
                 PhoneNumber = person.PhoneNumber,
                 Email = person.Email,
-                FilePath = person.FilePath,
+                //FilePath = person.FilePath,
                 PlaceOfResidence = new PlaceOfResidenceDto
                 {
                     City = person.PlaceOfResidence.City,
@@ -122,14 +129,52 @@ namespace ContactManagementApi.BusinessLogic.Services
             return personDto;
         }
 
-        public Task UpdatePersonAsync(Guid id, PersonDto personDto, string userId)
+        public async Task<bool> UpdatePersonAsync(Guid id, PersonUpdateDto personUpdateDto, string userId)
         {
-            throw new NotImplementedException();
+          
+            var person = await _personRepository.GetPersonByIdAsync(id, userId);
+
+            if (person == null)
+            {
+                throw new KeyNotFoundException("Person not found.");
+            }
+
+            // updeitinu Person
+            person.Name = personUpdateDto.Name;
+            person.LastName = personUpdateDto.LastName;
+            person.Gender = personUpdateDto.Gender;
+            person.Birthday = personUpdateDto.Birthday;
+            person.PersonIdentificationCode = personUpdateDto.PersonIdentificationCode;
+            person.PhoneNumber = personUpdateDto.PhoneNumber;
+            person.Email = personUpdateDto.Email;
+            //person.FilePath = personUpdateDto.FilePath;
+
+            
+            if (personUpdateDto.PlaceOfResidence != null)
+            {
+                if (person.PlaceOfResidence == null)
+                {
+                    person.PlaceOfResidence = new PlaceOfResidence();
+                }
+                person.PlaceOfResidence.City = personUpdateDto.PlaceOfResidence.City;
+                person.PlaceOfResidence.Street = personUpdateDto.PlaceOfResidence.Street;
+                person.PlaceOfResidence.HouseNumber = personUpdateDto.PlaceOfResidence.HouseNumber;
+                person.PlaceOfResidence.ApartmentNumber = personUpdateDto.PlaceOfResidence.ApartmentNumber;
+            }
+            await _personRepository.UpdatePersonAsync(person); 
+            return true;
+        }
+        public async Task<string> GetPersonPhotoPathAsync(Guid id, string userId)
+        {
+            var person = await _personRepository.GetPersonByIdAsync(id, userId);
+            if (person == null)
+            {
+                throw new KeyNotFoundException("Person not found.");
+            }
+
+            return person.FilePath;
         }
 
-        public Task GetPersonByNameAsync(string name, string userId)
-        {
-            throw new NotSupportedException();
-        }
+
     }
 }

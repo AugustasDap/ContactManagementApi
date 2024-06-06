@@ -21,7 +21,7 @@ namespace ContactManagementApi.Controllers
         }
 
         [HttpPost("AddPerson")]  
-        public async Task<Person> AddPerson(PersonDto person)
+        public async Task<PersonDto> AddPerson([FromForm] PersonUpdateDto person)
         {
            var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var createdPerson = await _personService.AddPersonAsync(person, userId);
@@ -29,6 +29,7 @@ namespace ContactManagementApi.Controllers
     
         }
         [HttpGet("GetPersonById")]
+       
         public async Task<ActionResult<PersonDto>> GetPersonById(Guid id)
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
@@ -53,5 +54,76 @@ namespace ContactManagementApi.Controllers
             }
         }
 
+        [HttpGet("GetPhotoByPersonId")]
+        public async Task<ActionResult<PersonDto>> GetPhotoByPersonId(Guid id)
+        {
+            var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            try
+            {
+                var filePath = await _personService.GetPersonPhotoPathAsync(id, userId);
+
+                if (string.IsNullOrEmpty(filePath) || !System.IO.File.Exists(filePath))
+                {
+                    return NotFound("Photo not found.");
+                }
+
+                var memory = new MemoryStream();
+                using (var stream = new FileStream(filePath, FileMode.Open))
+                {
+                    await stream.CopyToAsync(memory);
+                }
+                memory.Position = 0;
+
+                var contentType = "application/octet-stream";
+                return File(memory, contentType, Path.GetFileName(filePath));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("UpdatePerson")]
+        public async Task<IActionResult> UpdatePerson(Guid id, [FromForm] PersonUpdateDto personUpdateDto)
+        {
+            var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            try
+            {
+                var success = await _personService.UpdatePersonAsync(id, personUpdateDto, userId);
+                if (success)
+                {
+                    return Ok("Updated successfully"); 
+                }
+                return BadRequest("Update failed."); 
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("Person not found.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpDelete("DeletePerson")]
+        public async Task<IActionResult> DeletePerson (Guid id)
+        {
+            var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var isDeleted = await _personService.DeletePersonAsync(id, userId);
+            if (!isDeleted)
+            {
+                return NotFound("Person not found");
+            }
+            return Ok("Person deleted");
+        }
     }
 }

@@ -17,8 +17,10 @@ namespace ContactManagementApi.Database.Models
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
         public string FilePath { get; set; }
-        public Guid PlaceOfResidenceId { get; set; }
+        
         public PlaceOfResidence PlaceOfResidence { get; set; }
         public Guid UserId { get; set; }
+
+        public User User { get; set; }
     }
 }

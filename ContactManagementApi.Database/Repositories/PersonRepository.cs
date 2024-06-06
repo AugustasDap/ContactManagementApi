@@ -25,11 +25,17 @@ namespace ContactManagementApi.Database.Repositories
                 .FirstOrDefaultAsync(p => p.Id == id && p.UserId == new Guid(userId));
         }
 
-        public Task<Person> GetPersonByNameAsync(string name, string userId)
+        
+        public async Task UpdatePersonAsync(Person person)
         {
-            throw new NotImplementedException();
-            //    var getPersonByName = await _context.People.SingleOrDefault(n => n.Name == name && n.UserId.ToString() == userId);
-            //    return getPersonByName;
+            _context.People.Update(person);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeletePersonAsync(Person person)
+        {
+            _context.People.Remove(person);
+            await _context.SaveChangesAsync();
         }
     }
 }

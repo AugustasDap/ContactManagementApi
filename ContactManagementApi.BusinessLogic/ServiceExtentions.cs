@@ -10,9 +10,8 @@ namespace ContactManagementApi.BusinessLogic
         public static IServiceCollection AddBusinessLogic(this IServiceCollection services)
         {
             services.AddScoped<IPersonService, PersonService>();
-            //services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IJwtService, JwtService>();
-            services.AddScoped<AuthService>();
+            services.AddScoped<IAuthService, AuthService>();
             return services;
         }
 

@@ -5,7 +5,8 @@ namespace ContactManagementApi.Database.Repositories
     public interface IPersonRepository
     {
         Task<Person> AddPersonAsync(Person person);
-        Task<Person> GetPersonByNameAsync(string name, string userId);
         Task<Person> GetPersonByIdAsync(Guid id, string userId);
+        Task UpdatePersonAsync(Person person);
+        Task DeletePersonAsync(Person person);
     }
 }

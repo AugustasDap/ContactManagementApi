@@ -7,5 +7,6 @@
         public byte[] PasswordSalt { get; set; }
         public UserRole Role { get; set; }
         public ICollection<Person> People { get; set; } = [];
+        
     }
 }

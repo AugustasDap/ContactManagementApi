@@ -12,7 +12,7 @@ namespace ContactManagementApi.Database
         public static IServiceCollection AddDatabase(this IServiceCollection services, string connnectionString)
         {
             services.AddScoped<IPersonRepository, PersonRepository>();
-            //services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connnectionString));
 
             return services;

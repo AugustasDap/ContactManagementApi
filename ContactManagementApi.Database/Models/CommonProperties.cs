@@ -1,11 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ContactManagementApi.Database.Models
 {
     public class CommonProperties
     {
-        [DefaultValue("00000000-0000-0000-0000-000000000000")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] //auto ID duombazeje
         public Guid Id { get; set; }
     }
 }

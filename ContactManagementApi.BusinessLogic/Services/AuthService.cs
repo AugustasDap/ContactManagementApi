@@ -1,6 +1,7 @@
 ﻿using ContactManagementApi.BusinessLogic.Interfaces;
 using ContactManagementApi.Database.Context;
 using ContactManagementApi.Database.Models;
+using ContactManagementApi.Database.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 using System.Text;
@@ -12,10 +13,12 @@ namespace ContactManagementApi.BusinessLogic.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IJwtService _jwtService;
-        public AuthService(ApplicationDbContext context, IJwtService jwtService)
+        private readonly IUserRepository _userRepository;
+        public AuthService(ApplicationDbContext context, IJwtService jwtService, IUserRepository userRepository)
         {
             _context = context;
             _jwtService = jwtService;
+            _userRepository = userRepository;
         }
 
         public async Task<User> SignupNewUser(string userName, string password)
@@ -64,6 +67,17 @@ namespace ContactManagementApi.BusinessLogic.Services
             var token = _jwtService.GenerateJwtToken(user);
             return token;
         }
+
+        public async Task<bool> DeleteUserAsync(Guid id)
+        {
+            var user = await _userRepository.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                return false;
+            }
+            await _userRepository.DeleteUserAsync(user);
+            return true;
+        }
         private bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
         {
             if (password == null) throw new ArgumentNullException("password");
@@ -82,6 +96,8 @@ namespace ContactManagementApi.BusinessLogic.Services
 
             return true;
         }
+
+
     }
 
 }
