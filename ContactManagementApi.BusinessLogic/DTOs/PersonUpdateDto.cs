@@ -38,6 +38,8 @@ namespace ContactManagementApi.BusinessLogic.DTOs
         [Required]
         [CustomPersonEmailValidation]
         public string Email { get; set; }
+
+        [CustomImageFileValidation]
         public IFormFile File { get; set; }
         public PlaceOfResidenceDto PlaceOfResidence { get; set; }
     }

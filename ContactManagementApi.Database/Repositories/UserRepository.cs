@@ -17,7 +17,10 @@ namespace ContactManagementApi.Database.Repositories
         {
             return await _context.Users.FirstOrDefaultAsync(p => p.Id == id);
         }
-
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        {
+            return await _context.Users.ToListAsync();
+        }
         public async Task DeleteUserAsync(User user)
         {
             _context.Users.Remove(user);            

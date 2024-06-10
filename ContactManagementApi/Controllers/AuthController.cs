@@ -43,7 +43,29 @@ namespace ContactManagementApi.Controllers
 
             return Ok(new { Token = token });
         }
-        [HttpDelete("DeleteUser")]
+
+        [HttpGet("GetAllUsers(Adm)")]
+        [Authorize(Roles = "Admin")] //<<roles!!
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            try
+            {
+                var users = await _authService.GetAllUsersAsync();
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("DeleteUser(Adm)")]
         [Authorize(Roles = "Admin")] //<<roles!!
         public async Task<IActionResult> DeleteUser(Guid id)
         {

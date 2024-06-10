@@ -37,5 +37,11 @@ namespace ContactManagementApi.Database.Repositories
             _context.People.Remove(person);
             await _context.SaveChangesAsync();
         }
+        public async Task<IEnumerable<Person>> GetAllPersonsByUserIdAsync(Guid userId)
+        {
+            return await _context.People
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+        }
     }
 }

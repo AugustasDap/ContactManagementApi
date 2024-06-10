@@ -1,4 +1,5 @@
-﻿using ContactManagementApi.BusinessLogic.Interfaces;
+﻿using ContactManagementApi.BusinessLogic.DTOs;
+using ContactManagementApi.BusinessLogic.Interfaces;
 using ContactManagementApi.Database.Context;
 using ContactManagementApi.Database.Models;
 using ContactManagementApi.Database.Repositories;
@@ -68,6 +69,17 @@ namespace ContactManagementApi.BusinessLogic.Services
             return token;
         }
 
+        public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
+        {
+            var users = await _userRepository.GetAllUsersAsync();
+            var userDtos = users.Select(user => new UserDto
+            {
+                Id = user.Id,
+                UserName = user.Username,
+
+            });
+            return userDtos;
+        }
         public async Task<bool> DeleteUserAsync(Guid id)
         {
             var user = await _userRepository.GetUserByIdAsync(id);

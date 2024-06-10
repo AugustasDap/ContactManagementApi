@@ -8,5 +8,6 @@ namespace ContactManagementApi.Database.Repositories
         Task<Person> GetPersonByIdAsync(Guid id, string userId);
         Task UpdatePersonAsync(Person person);
         Task DeletePersonAsync(Person person);
+        Task<IEnumerable<Person>> GetAllPersonsByUserIdAsync(Guid userId);
     }
 }

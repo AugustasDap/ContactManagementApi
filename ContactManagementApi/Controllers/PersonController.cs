@@ -29,7 +29,8 @@ namespace ContactManagementApi.Controllers
     
         }
         [HttpGet("GetPersonById")]
-       
+        [Authorize(Roles = "Admin,User")]
+
         public async Task<ActionResult<PersonDto>> GetPersonById(Guid id)
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
@@ -87,6 +88,47 @@ namespace ContactManagementApi.Controllers
             }
         }
 
+        [HttpGet("GetAllPersons")]
+        public async Task<ActionResult<PersonDto>> GetAllPersons()
+        {
+            var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            try
+            {
+                var persons = await _personService.GetAllPersonsForLoggedUserAsync(userId);
+                return Ok(persons);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetAllPersonsByUserId(Adm)")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<PersonDto>> GetAllPersonsByUserId(Guid id)
+        {
+            var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            try
+            {
+                var persons = await _personService.GetAllPersonsByUserIdAsync(id);
+                return Ok(persons);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPut("UpdatePerson")]
         public async Task<IActionResult> UpdatePerson(Guid id, [FromForm] PersonUpdateDto personUpdateDto)
         {
@@ -114,7 +156,8 @@ namespace ContactManagementApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpDelete("DeletePerson")]
+        [HttpDelete("DeletePerson(+adm)")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> DeletePerson (Guid id)
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;

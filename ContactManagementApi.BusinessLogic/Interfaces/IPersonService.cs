@@ -9,7 +9,8 @@ namespace ContactManagementApi.BusinessLogic.Interfaces
         Task<PersonDto> AddPersonAsync(PersonUpdateDto personUpdateDto, string userId);
         Task<bool> UpdatePersonAsync(Guid id, PersonUpdateDto personUpdateDto, string userId);
         Task<PersonDto> GetPersonByIdAsync(Guid id, string userId);
-
+        Task<IEnumerable<PersonMinimalDto>> GetAllPersonsByUserIdAsync(Guid userId);
+        Task<IEnumerable<PersonMinimalDto>> GetAllPersonsForLoggedUserAsync(string userId);
         Task<bool> DeletePersonAsync(Guid id, string userId);
         Task<string> GetPersonPhotoPathAsync(Guid id, string userId);
 

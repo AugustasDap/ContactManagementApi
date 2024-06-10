@@ -174,6 +174,21 @@ namespace ContactManagementApi.BusinessLogic.Services
 
             return person.FilePath;
         }
+        public async Task<IEnumerable<PersonMinimalDto>> GetAllPersonsByUserIdAsync(Guid userId)
+        {
+            var persons = await _personRepository.GetAllPersonsByUserIdAsync(userId);
+            return persons.Select(person => new PersonMinimalDto
+            {
+                Id = person.Id,
+                Name = person.Name,
+                LastName = person.LastName
+            });
+        }
+        public async Task<IEnumerable<PersonMinimalDto>> GetAllPersonsForLoggedUserAsync(string userId)
+        {
+            var guidUserId = new Guid(userId);
+            return await GetAllPersonsByUserIdAsync(guidUserId);
+        }
 
 
     }
