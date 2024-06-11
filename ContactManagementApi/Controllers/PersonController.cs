@@ -14,17 +14,23 @@ namespace ContactManagementApi.Controllers
     public class PersonController : ControllerBase
     {
         private readonly IPersonService _personService;
+        private readonly ILogger<PersonController> _logger;
 
-        public PersonController(IPersonService personService)
+        public PersonController(IPersonService personService, ILogger<PersonController> logger)
         {
             _personService = personService;
+            _logger = logger;
         }
 
         [HttpPost("AddPerson")]  
         public async Task<PersonDto> AddPerson([FromForm] PersonUpdateDto person)
         {
            var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            _logger.LogInformation("AddPerson: Adding a new person for user {UserId}", userId);
             var createdPerson = await _personService.AddPersonAsync(person, userId);
+            _logger.LogInformation("AddPerson: Successfully added person with ID {PersonId} for user {UserId}", createdPerson.Id, userId);
+
             return createdPerson;
     
         }
@@ -40,9 +46,7 @@ namespace ContactManagementApi.Controllers
             }
             try
             {
-                var person = await _personService.GetPersonByIdAsync(id, userId);
-                              
-
+                var person = await _personService.GetPersonByIdAsync(id, userId);                      
                 return Ok(person);
             }
             catch (KeyNotFoundException)
@@ -100,15 +104,17 @@ namespace ContactManagementApi.Controllers
             try
             {
                 var persons = await _personService.GetAllPersonsForLoggedUserAsync(userId);
+                _logger.LogInformation("Retrieved all persons for user {UserId}", userId);
                 return Ok(persons);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while retrieving persons for user {UserId}", userId);
                 return BadRequest(ex.Message);
             }
         }
 
-        [HttpGet("GetAllPersonsByUserId(Adm)")]
+        [HttpGet("GetAllPersonsByUserId")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<PersonDto>> GetAllPersonsByUserId(Guid id)
         {
@@ -156,7 +162,7 @@ namespace ContactManagementApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpDelete("DeletePerson(+adm)")]
+        [HttpDelete("DeletePerson")]
         [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> DeletePerson (Guid id)
         {

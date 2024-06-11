@@ -36,7 +36,7 @@ namespace ContactManagementApi.BusinessLogic.Services
                 Username = userName,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
-                Role = UserRole.Default
+                Role = UserRole.User
 
 
             };

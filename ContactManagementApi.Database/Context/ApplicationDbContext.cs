@@ -34,19 +34,6 @@ namespace ContactManagementApi.Database.Context
                 .HasForeignKey<PlaceOfResidence>(pr => pr.PersonId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
-
-
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    base.OnModelCreating(modelBuilder);
-
-        //    modelBuilder.Entity<User>()
-        //        .HasMany(u => u.People)
-        //        .WithOne(p => p.User)
-        //        .HasForeignKey(p => p.UserId)
-        //        .OnDelete(DeleteBehavior.Cascade);
-
-
-        //}
+                
     }
 }

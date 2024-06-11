@@ -5,6 +5,12 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using ContactManagementApi.Database.Context;
+using Serilog;
+using Microsoft.AspNetCore.Hosting;
+using ContactManagementApi.BusinessLogic.Interfaces;
+using ContactManagementApi.BusinessLogic.Services;
+using ContactManagementApi.Database.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContactManagementApi
 {
@@ -12,14 +18,23 @@ namespace ContactManagementApi
     {
         public static void Main(string[] args)
         {
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            //line 21-39 logger functionality + 108-114 method
+            var logger = new LoggerConfiguration()
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
+            builder.Logging.AddSerilog(logger);
+      
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-        
+
             builder.Services.AddBusinessLogic();
             builder.Services.AddDatabase(builder.Configuration.GetConnectionString("Database"));
             builder.Services.AddSwaggerGen();
@@ -57,15 +72,15 @@ namespace ContactManagementApi
                     Type = SecuritySchemeType.Http
                 });
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement {
-                    {
-                    new OpenApiSecurityScheme {
-                        Reference = new OpenApiReference {
-                            Id = "Bearer",
-                            Type = ReferenceType.SecurityScheme
+                        {
+                        new OpenApiSecurityScheme {
+                            Reference = new OpenApiReference {
+                                Id = "Bearer",
+                                Type = ReferenceType.SecurityScheme
+                            }
+                        },
+                        new List <string> ()
                         }
-                    },
-                    new List <string> ()
-                    }
                 });
             });
             var app = builder.Build();
@@ -83,5 +98,7 @@ namespace ContactManagementApi
 
             app.Run();
         }
+        
     }
+    
 }

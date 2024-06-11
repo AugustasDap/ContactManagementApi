@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ContactManagementApi.Database.Repositories
 {
-    internal class PersonRepository : IPersonRepository
+    public class PersonRepository : IPersonRepository
     {
         private readonly ApplicationDbContext _context;
         public PersonRepository(ApplicationDbContext context)

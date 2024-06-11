@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace ContactManagementApi.BusinessLogic.DTOs
 {
+    [CustomPersonValidation]
     public class PersonUpdateDto
     {
         [Required]

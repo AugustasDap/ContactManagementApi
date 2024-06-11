@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace ContactManagementApi.BusinessLogic.DTOs
 {
+    [CustomPersonValidation]
     public class PersonDto
     {
         public Guid Id { get; set; }
