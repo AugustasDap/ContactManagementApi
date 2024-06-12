@@ -19,7 +19,7 @@ namespace ContactManagementApi.BusinessLogic.Attributes
             // Validate personal code format
             if (person.PersonIdentificationCode == null || person.PersonIdentificationCode.Length != 11 || !Regex.IsMatch(person.PersonIdentificationCode, @"^\d{11}$"))
             {
-                return new ValidationResult("Personal code must be exactly 11 digits long.");
+                return new ValidationResult("Personal code must be exactly 11 symbols long.");
             }
 
             // Extract parts of the personal code

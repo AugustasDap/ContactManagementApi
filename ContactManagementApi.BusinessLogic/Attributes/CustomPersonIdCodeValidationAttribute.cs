@@ -22,7 +22,7 @@ namespace ContactManagementApi.BusinessLogic.Attributes
                     return new ValidationResult("Personal code must be 11 digits long.");
                 }
 
-                // Validate format (only digits)
+                // Validate format (only numbers)
                 if (!Regex.IsMatch(personIdCode, @"^\d{11}$"))
                 {
                     return new ValidationResult("Personal code must contain only digits.");
